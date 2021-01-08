@@ -36,7 +36,7 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void dropUsersTable() {
         Transaction transaction = null;
-        try(Session session = Util.getSessionFactory().openSession()) {
+        try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.getTransaction();
             transaction.begin();
             session.createSQLQuery("DROP TABLE IF EXISTS users").executeUpdate();
@@ -52,7 +52,7 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void saveUser(String name, String lastName, byte age) {
         Transaction transaction = null;
-        try(Session session = Util.getSessionFactory().openSession()) {
+        try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.getTransaction();
             transaction.begin();
             session.save(new User(name, lastName, age));
@@ -68,7 +68,7 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void removeUserById(long id) {
         Transaction transaction = null;
-        try(Session session = Util.getSessionFactory().openSession()) {
+        try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.getTransaction();
             transaction.begin();
             session.delete(session.get(User.class, id));
@@ -84,7 +84,7 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public List<User> getAllUsers() {
         List<User> userList = null;
-        try(Session session = Util.getSessionFactory().openSession()) {
+        try (Session session = Util.getSessionFactory().openSession()) {
             session.setDefaultReadOnly(true);
             userList = session.createQuery("FROM User", User.class).getResultList();
         } catch (Exception e) {
@@ -96,7 +96,7 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void cleanUsersTable() {
         Transaction transaction = null;
-        try(Session session = Util.getSessionFactory().openSession()) {
+        try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.getTransaction();
             transaction.begin();
             session.createSQLQuery("DELETE FROM users").executeUpdate();
