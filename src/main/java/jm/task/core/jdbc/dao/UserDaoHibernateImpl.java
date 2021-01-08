@@ -3,6 +3,7 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.util.List;
 
@@ -15,58 +16,97 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void createUsersTable() {
         dropUsersTable();
-        Session session = Util.getSessionFactory().openSession();
-        session.getTransaction().begin();
-        session.createSQLQuery("CREATE TABLE users " +
-                "(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
-                "name VARCHAR(255) NOT NULL," +
-                "last_name VARCHAR(255) NOT NULL," +
-                "age SMALLINT NOT NULL)").executeUpdate();
-        session.getTransaction().commit();
-        session.close();
+        Transaction transaction = null;
+        try (Session session = Util.getSessionFactory().openSession()) {
+            transaction = session.getTransaction();
+            transaction.begin();
+            session.createSQLQuery("CREATE TABLE users " +
+                    "(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
+                    "name VARCHAR(255) NOT NULL," +
+                    "last_name VARCHAR(255) NOT NULL," +
+                    "age SMALLINT NOT NULL)").executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("create error", e);
+        }
     }
 
     @Override
     public void dropUsersTable() {
-        Session session = Util.getSessionFactory().openSession();
-        session.getTransaction().begin();
-        session.createSQLQuery("DROP TABLE IF EXISTS users").executeUpdate();
-        session.getTransaction().commit();
-        session.close();
+        Transaction transaction = null;
+        try(Session session = Util.getSessionFactory().openSession()) {
+            transaction = session.getTransaction();
+            transaction.begin();
+            session.createSQLQuery("DROP TABLE IF EXISTS users").executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("drop error", e);
+        }
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        Session session = Util.getSessionFactory().openSession();
-        session.getTransaction().begin();
-        session.save(new User(name, lastName, age));
-        session.getTransaction().commit();
-        session.close();
+        Transaction transaction = null;
+        try(Session session = Util.getSessionFactory().openSession()) {
+            transaction = session.getTransaction();
+            transaction.begin();
+            session.save(new User(name, lastName, age));
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("save error", e);
+        }
     }
 
     @Override
     public void removeUserById(long id) {
-        Session session = Util.getSessionFactory().openSession();
-        session.getTransaction().begin();
-        session.delete(session.get(User.class, id));
-        session.getTransaction().commit();
-        session.close();
+        Transaction transaction = null;
+        try(Session session = Util.getSessionFactory().openSession()) {
+            transaction = session.getTransaction();
+            transaction.begin();
+            session.delete(session.get(User.class, id));
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("remove error", e);
+        }
     }
 
     @Override
     public List<User> getAllUsers() {
-        Session session = Util.getSessionFactory().openSession();
-        List<User> userList = session.createQuery("FROM User", User.class).getResultList();
-        session.close();
+        List<User> userList = null;
+        try(Session session = Util.getSessionFactory().openSession()) {
+            session.setDefaultReadOnly(true);
+            userList = session.createQuery("FROM User", User.class).getResultList();
+        } catch (Exception e) {
+            throw new RuntimeException("get error", e);
+        }
         return userList;
     }
 
     @Override
     public void cleanUsersTable() {
-        Session session = Util.getSessionFactory().openSession();
-        session.getTransaction().begin();
-        session.createSQLQuery("DELETE FROM users").executeUpdate();
-        session.getTransaction().commit();
-        session.close();
+        Transaction transaction = null;
+        try(Session session = Util.getSessionFactory().openSession()) {
+            transaction = session.getTransaction();
+            transaction.begin();
+            session.createSQLQuery("DELETE FROM users").executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            throw new RuntimeException("clean error", e);
+        }
     }
 }
