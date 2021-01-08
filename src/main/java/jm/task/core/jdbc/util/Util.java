@@ -59,6 +59,8 @@ public class Util {
         properties.put("hibernate.connection.username", USERNAME);
         properties.put("hibernate.connection.password", PASSWORD);
         properties.put("hibernate.show_sql", true);
+        properties.put("hibernate.hbm2ddl.auto", "none");
+        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
         properties.put("hibernate.format_sql", true);
         properties.put("hibernate.connection.pool_size", 8);
         properties.put("hibernate.current-session_context_class", "thread");
