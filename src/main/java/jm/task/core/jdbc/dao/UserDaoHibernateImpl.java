@@ -8,6 +8,15 @@ import org.hibernate.Transaction;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
+
+    private static final String CREATE_TABLE = "CREATE TABLE users " +
+            "(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
+            "name VARCHAR(255) NOT NULL," +
+            "last_name VARCHAR(255) NOT NULL," +
+            "age SMALLINT NOT NULL)";
+
+    private static final String DROP_TABLE = "DROP TABLE IF EXISTS users";
+
     public UserDaoHibernateImpl() {
 
     }
@@ -19,11 +28,7 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.getTransaction();
             transaction.begin();
-            session.createSQLQuery("CREATE TABLE users " +
-                    "(id BIGINT PRIMARY KEY AUTO_INCREMENT," +
-                    "name VARCHAR(255) NOT NULL," +
-                    "last_name VARCHAR(255) NOT NULL," +
-                    "age SMALLINT NOT NULL)").executeUpdate();
+            session.createSQLQuery(CREATE_TABLE).executeUpdate();
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -39,7 +44,7 @@ public class UserDaoHibernateImpl implements UserDao {
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.getTransaction();
             transaction.begin();
-            session.createSQLQuery("DROP TABLE IF EXISTS users").executeUpdate();
+            session.createSQLQuery(DROP_TABLE).executeUpdate();
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
