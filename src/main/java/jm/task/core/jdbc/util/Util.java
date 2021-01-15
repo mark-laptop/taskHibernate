@@ -63,7 +63,7 @@ public class Util {
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
         properties.put("hibernate.format_sql", true);
         properties.put("hibernate.connection.pool_size", 8);
-        properties.put("hibernate.current-session_context_class", "thread");
+        properties.put("hibernate.current_session_context_class", "thread");
         return properties;
     }
 }
